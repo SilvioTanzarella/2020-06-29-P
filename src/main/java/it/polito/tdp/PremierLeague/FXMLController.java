@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,30 +41,41 @@ public class FXMLController {
     private TextField txtMinuti; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbMese"
-    private ComboBox<?> cmbMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
-    private ComboBox<?> cmbM1; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM2"
-    private ComboBox<?> cmbM2; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
     @FXML
     void doConnessioneMassima(ActionEvent event) {
-    	
+    	this.txtResult.appendText("\nCONNESSIONI MASSIME:\n"+this.model.getCoppieMigliori());
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	
+    	int minuti = 0;
+    	try {
+    		minuti = Integer.parseInt(this.txtMinuti.getText());
+    		this.model.creaGrafo(this.cmbMese.getValue(), minuti);
+    		this.txtResult.setText("GRAFO CREATO\n#VERTICI: "+this.model.getNumeroVertici()+"\n#ARCHI: "+this.model.getNumeroArchi()+"\n");
+    		this.cmbM1.getItems().addAll(this.model.getVertici());
+    		this.cmbM2.getItems().addAll(this.model.getVertici());
+    		
+    	}catch(NumberFormatException e) {
+    		this.txtResult.setText("Inserire un numero");
+    	}
     }
 
     @FXML
     void doCollegamento(ActionEvent event) {
-    	
+    	this.txtResult.appendText("\nPERCORSO MIGLIORE:\n");
+    	this.txtResult.appendText(this.model.getPercorsoMigliore(this.cmbM1.getValue(), this.cmbM2.getValue()));
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -79,7 +92,11 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
-  
+    	List<Integer> mesi = new ArrayList<Integer>();
+    	for(int i=1;i<=12;i++) {
+    		mesi.add(i);
+    	}
+    	this.cmbMese.getItems().addAll(mesi);
     }
     
     
